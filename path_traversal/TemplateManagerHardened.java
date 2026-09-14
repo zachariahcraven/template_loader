@@ -9,7 +9,7 @@ import java.util.Scanner;
 // template that is a symlink pointing outside templates/. load() passes its
 // "../" check (the name stays inside templates/), then readString FOLLOWS
 // the link out -> arbitrary file read.
-public class TemplateManager {
+public class TemplateManagerHardened {
     static final Path TEMPLATES = Path.of("templates");
     static final Scanner in = new Scanner(System.in);
 
@@ -28,12 +28,12 @@ public class TemplateManager {
         String name = in.nextLine().trim();
         Path base   = TEMPLATES.toAbsolutePath().normalize();
         Path target = base.resolve(name).normalize();
-        if (!target.startsWith(base)) {
+        if (!target.toRealPath().startsWith(base)) {
             System.out.println("  blocked");
             return;
         }
         if (!Files.exists(target)) { System.out.println("  not found: " + name); return; }
-        System.out.print("  --- rendered ---\n" + Files.readString(target)); // follows symlinks
+        System.out.print("  --- rendered ---\n" + Files.readString(target));
     }
 
     public static void main(String[] args) throws Exception {
